@@ -1,9 +1,9 @@
-# SakuraPanel
-樱花内网穿透网页端源代码，2020 重制
+# WeFrpPanel
+WeFrp网页端源代码，基于樱花面板修改
 
-由于时间匆忙，没有写自动安装程序，所有操作需要手动完成。
+由于我懒，没有写自动安装程序，所有操作需要手动完成。
 
-__注意:__ 网站程序近期有较大改动，更新时请先阅读 Wiki 的 Update 页面，根据教程来更新。
+__注意:__ 邀请码和谷歌REC部分代码仍然保留你可以自己该回去
 
 ## 功能和特性
 - 支持多用户
@@ -15,18 +15,18 @@ __注意:__ 网站程序近期有较大改动，更新时请先阅读 Wiki 的 U
 - 实时流量统计
 - 美观的界面
 
-__在线预览:__ https://sakuracloud.cn/
+__在线预览:__ https://yisule.bf/
 
-用户名：`Akkariin` 密码：`12345678`
+用户自行创建
 
 ## 安装和配置
 首先将项目 clone 到本地
 ```
-git clone https://github.com/ZeroDream-CN/SakuraPanel/
+git clone https://github.com/WeFrp/Panel/
 ```
 接着移动到网站目录，并设置权限
 ```
-mv SakuraPanel/* /data/wwwroot/my.panel.com/
+mv Panel/* /data/wwwroot/my.panel.com/
 chown -R www:www /data/wwwroot/my.panel.com/
 ```
 然后进入到网站目录，分别编辑以下三个文件，修改数据库信息
@@ -39,27 +39,17 @@ chown -R www:www /data/wwwroot/my.panel.com/
 
 配置完成后，使用 Navicat、phpMyAdmin 等数据库管理软件创建一个数据库，然后导入 `import.sql`。
 
-数据库编码类型：utf8mb4 / utf8mb4_unicode_ci；数据库引擎：InnoDB
+数据库编码类型：utf8mb4 / utf8mb4_unicode_ci；数据库引擎：InnoDB Mysql版本：5.7
 
 导入完成后，打开网站，注册一个新账号，然后在数据库中设置这个账号的 __group__ 字段为 `admin` 即可设置为管理员。
 
 ## 配套 Frps 服务端
-本面板需要专用 Frps 才能兼容，请访问我的另一个项目：https://github.com/ZeroDream-CN/SakuraFrp
+本面板需要专用 Frps 才能兼容，请访问我的另一个项目：https://github.com/WeFrp/Daemon (这个还没传先用原版) https://github.com/ZeroDream-CN/SakuraFrp
 
 请按照另一个项目的介绍在每个服务器节点上进行配置。
 
 Frpc 客户端无特殊需求，只要版本是 0.28.0 都可以兼容使用。
 
-## 许可协议
-> ~~本软件仅限个人非盈利使用，完整许可协议请查看 LICENSE 文件。~~
->
-> ~~如需用于商业行为（例如出租内网穿透），或者需要技术支持，请与我 [联系](https://github.com/ZeroDream-CN/SakuraPanel/issues/21)。~~
-
-转行做游戏了，此项目已经停止维护，想商用就直接用吧，不要用于违法用途就好。
-
-关于面板的安装和使用有不明白的可以加群 478112133 在群里问，但我平时比较忙不一定能看到，随缘解答。
-
 ## 交流
 
-- 官方 Telegram 群：https://t.me/natfrp
-- 作者 QQ：204034
+- 作者 QQ：2012036686
