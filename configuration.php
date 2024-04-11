@@ -1,18 +1,18 @@
 <?php
 $_config = Array(
 	
-	/* 站点名称 */ 'sitename'      => 'Sakura Panel',
+	/* 站点名称 */ 'sitename'      => 'WeFrp',
 	// 会显示在标题等地方
-	
-	/* 站点简介 */ 'description'   => '内网穿透管理面板',
+	/* 站点地址 */ 'siteurl'      => 'https://yisule.bf',
+	/* 站点简介 */ 'description'   => '内网穿透',
 	// 会显示在大部分地方
 	
 	// 数据库相关配置
 	/* 地址 */ 'db_host'           => '127.0.0.1',
 	/* 端口 */ 'db_port'           => 3306,
-	/* 账号 */ 'db_user'           => 'root',
-	/* 密码 */ 'db_pass'           => '12345678',
-	/* 名称 */ 'db_name'           => 'spanel',
+	/* 账号 */ 'db_user'           => 'wefrp',
+	/* 密码 */ 'db_pass'           => '123',
+	/* 名称 */ 'db_name'           => 'wefrp',
 	/* 编码 */ 'db_code'           => 'utf8mb4',
 	
 	// 新注册用户相关设置
@@ -21,13 +21,6 @@ $_config = Array(
 		/* 赠送流量 */ 'traffic'   => 1024, // 1GB 流量
 		/* 隧道数量 */ 'proxies'   => 5,
 		/* 需要邀请 */ 'invite'    => false
-	),
-	
-	// 谷歌验证码相关配置
-	'recaptcha' => Array(
-		/* 是否启用 */ 'enable'    => true,
-		/* 前端密钥 */ 'sitekey'   => '',
-		/* 后端密钥 */ 'sitetoken' => ''
 	),
 	
 	// 签到功能相关配置
@@ -43,16 +36,16 @@ $_config = Array(
 	// 如果服务器需要 SSL，请在主机地址前面加 ssl://
 	'smtp' => Array(
 		/* 是否启用 */ 'enable'    => true,
-		/* 主机地址 */ 'host'      => 'smtp.example.com',
-		/* 主机端口 */ 'port'      => 25,
-		/* 发信账号 */ 'user'      => 'noreply@example.com',
-		/* 发信密码 */ 'pass'      => '12345678',
-		/* 发信邮箱 */ 'mail'      => 'noreply@example.com'
+		/* 主机地址 */ 'host'      => 'ssl://smtp.feishu.cn',
+		/* 主机端口 */ 'port'      => 465,
+		/* 发信账号 */ 'user'      => 'frp@hxhl.bf',
+		/* 发信密码 */ 'pass'      => '123456',
+		/* 发信邮箱 */ 'mail'      => 'frp@hxhl.bf'
 	),
 	
 	'proxies' => Array(
-		/* 最小端口 */ 'min'       => 1024,
-		/* 最大端口 */ 'max'       => 65535,
+		/* 最小端口 */ 'min'       => 10000,
+		/* 最大端口 */ 'max'       => 50000,
 		/* 保留端口 */ 'protect'   => Array(
 			// 保留端口格式：      起始端口 => 结束端口,
 			// 起始端口必须大于结束端口，否则会引发意外错误

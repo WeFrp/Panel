@@ -1,27 +1,27 @@
 <?php
-namespace SakuraPanel;
+namespace WeFrp;
 
-use SakuraPanel;
+use WeFrp;
 
 $page_title = "流量统计";
-$um = new SakuraPanel\UserManager();
+$um = new WeFrp\UserManager();
 $rs = Database::querySingleLine("users", Array("username" => $_SESSION['user']));
 
 if(!$rs || $rs['group'] !== "admin") {
-	exit("<script>location='?page=panel';</script>");
+	exit("<script>location='/panel';</script>");
 }
 
 if(isset($_GET['getinfo']) && preg_match("/^[0-9]{1,10}$/", $_GET['getinfo'])) {
 	ob_clean();
-	SakuraPanel\Utils::checkCsrf();
-	$nm = new SakuraPanel\NodeManager();
+	WeFrp\Utils::checkCsrf();
+	$nm = new WeFrp\NodeManager();
 	$rs = $nm->getNodeInfo($_GET['getinfo']);
 	if(is_array($rs)) {
-		$hs = SakuraPanel\Utils::http("http://admin:{$rs['admin_pass']}@{$rs['ip']}:{$rs['admin_port']}/api/serverinfo");
+		$hs = WeFrp\Utils::http("http://admin:{$rs['admin_pass']}@{$rs['ip']}:{$rs['admin_port']}/api/serverinfo");
 		if(isset($hs['status']) && $hs['status'] == 200) {
 			$js = json_decode($hs['body'], true);
-			$tf_in  = SakuraPanel\Utils::getFormatTraffic($js['total_traffic_in']);
-			$tf_out = SakuraPanel\Utils::getFormatTraffic($js['total_traffic_out']);
+			$tf_in  = WeFrp\Utils::getFormatTraffic($js['total_traffic_in']);
+			$tf_out = WeFrp\Utils::getFormatTraffic($js['total_traffic_out']);
 			echo <<<EOF
 <h4>{$rs['name']} <small>节点信息</small></h4>
 <hr>
@@ -48,13 +48,13 @@ EOF;
 }
 if(isset($_GET['gettraffic']) && preg_match("/^[0-9]{1,10}$/", $_GET['gettraffic']) && in_array($_GET['type'], ["tcp", "udp", "http", "https", "stcp"])) {
 	ob_clean();
-	SakuraPanel\Utils::checkCsrf();
-	$um = new SakuraPanel\UserManager();
-	$nm = new SakuraPanel\NodeManager();
+	WeFrp\Utils::checkCsrf();
+	$um = new WeFrp\UserManager();
+	$nm = new WeFrp\NodeManager();
 	$rs = $nm->getNodeInfo($_GET['gettraffic']);
 	$tokens = $um->getTokensToUsers();
 	if(is_array($rs)) {
-		$hs = SakuraPanel\Utils::http("http://admin:{$rs['admin_pass']}@{$rs['ip']}:{$rs['admin_port']}/api/proxy/{$_GET['type']}");
+		$hs = WeFrp\Utils::http("http://admin:{$rs['admin_pass']}@{$rs['ip']}:{$rs['admin_port']}/api/proxy/{$_GET['type']}");
 		if(isset($hs['status']) && $hs['status'] == 200) {
 			$js = json_decode($hs['body'], true);
 			echo '<table class="table table-striped table-valign-middle" style="width: 100%;font-size: 15px;margin-top: 12px;margin-bottom: 0px;">';
@@ -66,8 +66,8 @@ if(isset($_GET['gettraffic']) && preg_match("/^[0-9]{1,10}$/", $_GET['gettraffic
 				echo "<td>{$name[1]}</td>";
 				echo "<td>{$tokens[$name[0]]}</td>";
 				echo "<td>{$proxy['cur_conns']}</td>";
-				$tf_in  = SakuraPanel\Utils::getFormatTraffic($proxy['today_traffic_in']);
-				$tf_out = SakuraPanel\Utils::getFormatTraffic($proxy['today_traffic_out']);
+				$tf_in  = WeFrp\Utils::getFormatTraffic($proxy['today_traffic_in']);
+				$tf_out = WeFrp\Utils::getFormatTraffic($proxy['today_traffic_out']);
 				echo "<td>{$tf_in} / {$tf_out}</td>";
 				echo "<td>{$proxy['status']}</td>";
 				echo "</tr>";
@@ -110,7 +110,7 @@ if(isset($_GET['gettraffic']) && preg_match("/^[0-9]{1,10}$/", $_GET['gettraffic
         <div class="row">
             <div class="col-lg-8">
                 <div class="card">
-                    <div class="card-header border-0">
+                    <div class="card-header pb-0">
                         <div class="d-flex justify-content-between">
                             <h3 class="card-title">服务器节点</h3>
                         </div>
@@ -213,7 +213,7 @@ function selectserver(id) {
 	$("#serverinfo").html("正在查询...");
 	var htmlobj = $.ajax({
 		type: 'GET',
-		url: "?page=panel&module=traffic&getinfo=" + id + "&csrf=" + csrf_token,
+		url: "/panel/traffic?getinfo=" + id + "&csrf=" + csrf_token,
 		async:true,
 		error: function() {
 			alert("错误：" + htmlobj.responseText);
@@ -234,7 +234,7 @@ function gettraffic(type) {
 	$("#trafficlist").html("正在查询...");
 	var htmlobj = $.ajax({
 		type: 'GET',
-		url: "?page=panel&module=traffic&gettraffic=" + nodeid + "&type=" + type + "&csrf=" + csrf_token,
+		url: "/panel/traffic?gettraffic=" + nodeid + "&type=" + type + "&csrf=" + csrf_token,
 		async:true,
 		error: function() {
 			alert("错误：" + htmlobj.responseText);

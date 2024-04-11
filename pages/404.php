@@ -19,6 +19,6 @@
 		<logo>:(</logo>
 		<h1>404 Notfound</h1>
 		<p><b>Error:</b> File or directory not found</p>
-		<p><em>Powered by Sakura Panel</em></p>
+		<p><em>Powered by WeFrp</em></p>
 	</body>
 </html>

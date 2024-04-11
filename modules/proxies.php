@@ -1,7 +1,7 @@
 <?php
-namespace SakuraPanel;
+namespace WeFrp;
 
-use SakuraPanel;
+use WeFrp;
 
 include(ROOT . "/core/Parsedown.php");
 
@@ -11,17 +11,17 @@ $markdown->setBreaksEnabled(true);
 $markdown->setUrlsLinked(true);
 $page_title = "隧道列表";
 $rs = Database::querySingleLine("users", Array("username" => $_SESSION['user']));
-$pm = new SakuraPanel\ProxyManager();
-$nm = new SakuraPanel\NodeManager();
-$um = new SakuraPanel\UserManager();
+$pm = new WeFrp\ProxyManager();
+$nm = new WeFrp\NodeManager();
+$um = new WeFrp\UserManager();
 
 if(!$rs) {
-	exit("<script>location='?page=login';</script>");
+	exit("<script>location='/login';</script>");
 }
 
 if(isset($_GET['getproxyinfo']) && preg_match("/^[0-9]{1,10}$/", $_GET['getproxyinfo'])) {
 	ob_clean();
-	SakuraPanel\Utils::checkCsrf();
+	WeFrp\Utils::checkCsrf();
 	$rs = $pm->getProxyInfo($_GET['getproxyinfo']);
 	if($rs) {
 		if(isset($rs['username']) && $rs['username'] == $_SESSION['user']) {
@@ -80,24 +80,16 @@ if(isset($_GET['getproxyinfo']) && preg_match("/^[0-9]{1,10}$/", $_GET['getproxy
 					<td><?php echo $domain == "" ? "无" : $domain; ?></td>
 				</tr>
 				<tr>
-					<th>URI 绑定</th>
-					<td><?php echo $rs['locations'] == "" ? "无" : $rs['locations']; ?></td>
-				</tr>
-				<tr>
-					<th>Host 重写</th>
-					<td><?php echo $rs['host_header_rewrite'] == "" ? "无" : $rs['host_header_rewrite']; ?></td>
-				</tr>
-				<tr>
 					<th>连接密码</th>
 					<td><?php echo $rs['sk'] == "" ? "无" : $rs['sk']; ?></td>
 				</tr>
 				<tr>
-					<th>X-From-Where</th>
-					<td><?php echo $rs['header_X-From-Where'] == "" ? "无" : $rs['header_X-From-Where']; ?></td>
-				</tr>
-				<tr>
 					<th>状态</th>
 					<td><?php echo $rs['status'] == "0" ? "启用" : "禁用"; ?></td>
+				</tr>
+				<tr>
+					<th>启动命令</th>
+					<td><code style="background-color: #f0f0f0; padding: 2px; border-radius: 5px;">./frpc <?php echo $rs['proxy_type'];?> -i <?php echo $rs['local_ip'];?> -l <?php echo $rs['local_port'];?> -n <?php echo $rs['proxy_name'];?><?php if($rs['proxy_type'] == 'http' || $rs['proxy_type'] == 'https'){ ?> -d <?php echo $domain;?><?php }else{?> -r <?php echo $rs['remote_port'];?><?php }?> -s <?php echo $ns['hostname'];?>:<?php echo $ns['port'];?> -t <?php echo $ns['token'];?> -u <?php echo $um->getUserToken($_SESSION['user']);?> <?php echo $rs['use_encryption'] == "true" ? "--ue" : ""; ?><?php echo $rs['use_compression'] == "true" ? " --uc" : ""; ?></code></td>
 				</tr>
 			</table>
 			<?php
@@ -112,7 +104,7 @@ if(isset($_GET['getproxyinfo']) && preg_match("/^[0-9]{1,10}$/", $_GET['getproxy
 
 if(isset($_GET['toggle']) && preg_match("/^[0-9]{1,10}$/", $_GET['toggle'])) {
 	ob_clean();
-	SakuraPanel\Utils::checkCsrf();
+	WeFrp\Utils::checkCsrf();
 	$rs = $pm->getProxyInfo($_GET['toggle']);
 	if($rs) {
 		if(isset($rs['username']) && $rs['username'] == $_SESSION['user']) {
@@ -136,7 +128,7 @@ if(isset($_GET['toggle']) && preg_match("/^[0-9]{1,10}$/", $_GET['toggle'])) {
 
 if(isset($_GET['delete']) && preg_match("/^[0-9]{1,10}$/", $_GET['delete'])) {
 	ob_clean();
-	SakuraPanel\Utils::checkCsrf();
+	WeFrp\Utils::checkCsrf();
 	$rs = $pm->getProxyInfo($_GET['delete']);
 	if($rs) {
 		if(isset($rs['username']) && $rs['username'] == $_SESSION['user']) {
@@ -167,7 +159,7 @@ $max_proxies = Intval($um->getInfoByUser($_SESSION['user'])['proxies']);
     <div class="container-fluid">
         <div class="row mb-2">
             <div class="col-sm-6">
-                <h1 class="m-0 text-dark"><?php echo $page_title; ?>&nbsp;&nbsp;<small class="text-muted text-xs">管理您的内网穿透隧道</small></h1></div>
+                <h1 class="m-0 text-dark"><?php echo $page_title; ?></h1></div>
             <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
                     <li class="breadcrumb-item">
@@ -180,9 +172,9 @@ $max_proxies = Intval($um->getInfoByUser($_SESSION['user'])['proxies']);
 <div class="content">
     <div class="container-fluid">
         <div class="row">
-            <div class="col-lg-8">
+            <div class="col-lg-12">
                 <div class="card">
-                    <div class="card-header border-0">
+                    <div class="card-header pb-0">
                         <div class="d-flex justify-content-between">
                             <h3 class="card-title">映射隧道列表</h3>
                         </div>
@@ -192,7 +184,7 @@ $max_proxies = Intval($um->getInfoByUser($_SESSION['user'])['proxies']);
                         <table class="table table-striped table-valign-middle">
 							<thead>
 								<tr>
-									<th>ID</th>
+								    <th nowrap>隧道ID</th>
 									<th nowrap>隧道名称</th>
 									<th nowrap>隧道类型</th>
 									<th nowrap>绑定域名 / 远程端口</th>
@@ -243,30 +235,6 @@ $max_proxies = Intval($um->getInfoByUser($_SESSION['user'])['proxies']);
                     </div>
                 </div>
 			</div>
-			<div class="col-lg-4">
-				<div class="card">
-                    <div class="card-header border-0">
-                        <div class="d-flex justify-content-between">
-                            <h3 class="card-title">隧道类型介绍</h3>
-                        </div>
-                    </div>
-                    <div class="card-body fix-text">
-						<p><b>提示：</b>XTCP 映射成功率并不高，具体取决于 NAT 设备的复杂度。</p>
-						<p><b>TCP 映射</b></p>
-						<p>基础的 TCP 映射，适用于大多数服务，例如远程桌面、SSH、Minecraft、泰拉瑞亚等</p>
-						<p><b>UDP 映射</b></p>
-						<p>基础的 UDP 映射，适用于域名解析、部分基于 UDP 协议的游戏等</p>
-						<p><b>HTTP 映射</b></p>
-						<p>搭建网站专用映射，并通过 80 端口访问。</p>
-						<p><b>HTTPS 映射</b></p>
-						<p>带有 SSL 加密的网站映射，通过 443 端口访问，服务器需要支持 SSL。</p>
-						<p><b>XTCP 映射</b></p>
-						<p>客户端之间点对点 (P2P) 连接协议，流量不经过服务器，适合大流量传输的场景，需要两台设备之间都运行一个客户端。</p>
-						<p><b>STCP 映射</b></p>
-						<p>安全交换 TCP 连接协议，基于 TCP，访问此服务的用户也需要运行一个客户端，才能建立连接，流量由服务器转发。</p>
-                    </div>
-                </div>
-            </div>
 		</div>
 	</div>
 </div>
@@ -275,13 +243,10 @@ $max_proxies = Intval($um->getInfoByUser($_SESSION['user'])['proxies']);
         <div class="modal-content">
             <div class="modal-header">
                 <h4 class="modal-title" id="msg-title"></h4>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">×</span></button>
             </div>
             <div class="modal-body" id="msg-body"></div>
             <div class="modal-footer justify-content-between">
-                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
-                <button type="button" class="btn btn-primary" data-dismiss="modal">确定</button></div>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="window.location.reload()">确定</button></div>
         </div>
     </div>
 </div>
@@ -290,13 +255,12 @@ $max_proxies = Intval($um->getInfoByUser($_SESSION['user'])['proxies']);
         <div class="modal-content">
             <div class="modal-header">
                 <h4 class="modal-title">删除确认</h4>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">×</span></button>
             </div>
             <div class="modal-body">您确定要删除此隧道吗？删除之后将不能恢复！</div>
             <div class="modal-footer justify-content-between">
-                <button type="button" class="btn btn-default" data-dismiss="modal" onclick="tempdelete = ''">关闭</button>
-                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="confirmDeleteProxy()">确定</button></div>
+                <button type="button" class="btn btn-default" data-dismiss="modal" onclick="window.location.reload()">关闭</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="confirmDeleteProxy()">确定</button>
+                </div>
         </div>
     </div>
 </div>
@@ -311,7 +275,7 @@ function alertMessage(title, body) {
 function getProxyInfo(id) {
 	var htmlobj = $.ajax({
 		type: 'GET',
-		url: "?page=panel&module=proxies&getproxyinfo=" + id + "&csrf=" + csrf_token,
+		url: "/panel/proxies?getproxyinfo=" + id + "&csrf=" + csrf_token,
 		async:true,
 		error: function() {
 			return;
@@ -325,7 +289,7 @@ function getProxyInfo(id) {
 function toggleProxy(id) {
 	var htmlobj = $.ajax({
 		type: 'GET',
-		url: "?page=panel&module=proxies&toggle=" + id + "&csrf=" + csrf_token,
+		url: "/panel/proxies?toggle=" + id + "&csrf=" + csrf_token,
 		async:true,
 		error: function() {
 			return;
@@ -345,7 +309,7 @@ function confirmDeleteProxy() {
 	if(tempdelete != "") {
 		var htmlobj = $.ajax({
 			type: 'GET',
-			url: "?page=panel&module=proxies&delete=" + tempdelete + "&csrf=" + csrf_token,
+			url: "/panel/proxies?delete=" + tempdelete + "&csrf=" + csrf_token,
 			async:true,
 			error: function() {
 				return;

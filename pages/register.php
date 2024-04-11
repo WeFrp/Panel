@@ -1,98 +1,169 @@
 <?php
 global $_config;
-if(!$_config['register']['enable']) {
-	exit("<script>location='?page=login';</script>");
-}
+$curl = curl_init();
+curl_setopt_array($curl, array(
+   CURLOPT_URL => 'https://v1.hitokoto.cn/',
+   CURLOPT_RETURNTRANSFER => true,
+   CURLOPT_ENCODING => '',
+   CURLOPT_MAXREDIRS => 10,
+   CURLOPT_TIMEOUT => 0,
+   CURLOPT_FOLLOWLOCATION => true,
+   CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+));
+$response = curl_exec($curl);
+curl_close($curl);
+$response = json_decode($response,true);
 ?>
-<!DOCTYPE HTML>
-<html lang="zh_CN">
-	<head>
-		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-		<meta http-equiv="X-UA-Compatible" content="IE=11">
-		<meta name="msapplication-TileColor" content="#F1F1F1">
-		<link href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.2.3/css/bootstrap.min.css" rel="stylesheet">
-		<script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
-		<script src="https://cdn.bootcdn.net/ajax/libs/popper.js/2.11.7/cjs/popper.min.js"></script>
-		<script src="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.2.3/js/bootstrap.min.js"></script>
-		<?php if($_config['recaptcha']['enable']) echo '<script src="https://www.recaptcha.net/recaptcha/api.js?render=' . $_config['recaptcha']['sitekey'] . '" defer></script>'; ?>
-		<title>注册 :: <?php echo $_config['sitename']; ?> - <?php echo $_config['description']; ?></title>
-		<style type="text/css">.full-width{width:100%;}.logo{font-weight:400;}body:before{content:"";display:block;position:fixed;left:0;top:0;width:100%;height:100%;z-index:-10;}body,body:before{background-color:#000;background-image:url(https://i.loli.net/2019/08/13/7EqLWfi1tw6M2Qn.jpg);background-size:cover;background-position:center;background-attachment:fixed;background-repeat:no-repeat;-webkit-background-size:cover;-moz-background-size:cover;-o-background-size:cover;}.main-box{width:100%;background:rgba(255,255,255,0.9);border:32px solid rgba(0,0,0,0);border-bottom:16px solid rgba(0,0,0,0);box-shadow:0px 0px 32px rgba(0,0,0,0.75);}.copyright{position:fixed;bottom:16px;left:32px;color:#FFF;font-size:16px;text-shadow:0px 0px 8px rgba(0,0,0,0.75);}@media screen and (max-width:992px){.padding-content{display:none;}.main-content{width:100%;max-width:100%;flex:0 0 100%;}.main-box{width:70%;}}@media screen and (max-width:768px){.padding-content{display:none;}.main-content{width:100%;max-width:100%;flex:0 0 100%;}.main-box{width:100%;}}</style>
-	</head>
-	<body>
-		<div class="container">
-			<div class="row">
-				<div class="col-sm-3 padding-content"></div>
-				<div class="col-sm-6 main-content">
-					<table style="width: 100%;height: 100vh;">
-						<tr style="height: 100%;">
-							<td style="height: 100%;padding-bottom: 64px;">
-								<center>
-									<?php
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <link rel="apple-touch-icon" sizes="76x76" href="assets/img/apple-icon.png">
+  <link rel="icon" href="./assets/images/fav.svg">
+  <title>
+    注册 - <?php echo $_config['sitename']; ?> - <?php echo $_config['description']; ?>  </title>
+  <!--     Fonts and icons     -->
+  <link href="https://fonts.font.im/css?family=Open+Sans:300,400,600,700" rel="stylesheet" />
+  <!-- Nucleo Icons -->
+  <link href="assets/css/nucleo-icons.css" rel="stylesheet" />
+  <link href="assets/css/nucleo-svg.css" rel="stylesheet" />
+  <!-- Font Awesome Icons -->
+  <link id="pagestyle" href="https://lf26-cdn-tos.bytecdntp.com/cdn/expire-1-y/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
+  <link href="assets/css/nucleo-svg.css" rel="stylesheet" />
+  <!-- CSS Files -->
+  <link id="pagestyle" href="assets/css/wefrp-dashboard.css?v=2.0.4" rel="stylesheet" />
+</head>
+
+<body style="background-image:url(https://api.imlazy.ink/img);background-size:cover;background-position:center;background-attachment:fixed;background-repeat:no-repeat;-webkit-background-size:cover;-moz-background-size:cover;-o-background-size:cover;">
+  <div class="container position-sticky z-index-sticky top-0">
+    <div class="row">
+      <div class="col-12">
+        <!-- Navbar -->
+        <nav class="navbar navbar-expand-lg blur border-radius-lg top-0 z-index-3 shadow position-absolute mt-4 py-2 start-0 end-0 mx-4">
+          <div class="container-fluid">
+            <a class="navbar-brand font-weight-bolder ms-lg-0 ms-3 " href="/">
+              <?php echo $_config['sitename']; ?>
+            </a>
+            <button class="navbar-toggler shadow-none ms-2" type="button" data-bs-toggle="collapse" data-bs-target="#navigation" aria-controls="navigation" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon mt-2">
+                <span class="navbar-toggler-bar bar1"></span>
+                <span class="navbar-toggler-bar bar2"></span>
+                <span class="navbar-toggler-bar bar3"></span>
+              </span>
+            </button>
+            <div class="collapse navbar-collapse" id="navigation">
+              <ul class="navbar-nav mx-auto">
+                <li class="nav-item">
+                  <a class="nav-link d-flex align-items-center me-2 active" aria-current="page" href="/">
+                    <i class="fa fa-home opacity-6 text-dark me-1"></i>
+                    主页
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link me-2" href="/register">
+                    <i class="fas fa-user-circle opacity-6 text-dark me-1"></i>
+                    注册
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link me-2" href="/login">
+                    <i class="fas fa-key opacity-6 text-dark me-1"></i>
+                    登录
+                  </a>
+                </li>
+              </ul>
+              <!--<ul class="navbar-nav d-lg-block d-none">
+                <li class="nav-item">
+                  <a href="/bbs" class="btn btn-sm mb-0 me-1 btn-primary">论坛</a>
+                </li>
+              </ul>-->
+            </div>
+          </div>
+        </nav>
+        <!-- End Navbar -->
+      </div>
+    </div>
+  </div>
+  <main class="main-content  mt-0">
+    <section>
+      <div class="page-header min-vh-100">
+        <div class="container">
+          <div class="row">
+            <div class="col-xl-4 col-lg-5 col-md-7 d-flex flex-column mx-lg-0 mx-auto">
+              <div class="card blur">
+                <div class="card-body pb-0 text-start">
+                  <h4 class="font-weight-bolder">注册</h4>
+                  <p class="mb-0">输入您的电子邮箱和密码以进行注册</p>
+                  								<?php
 									if(isset($data['status']) && isset($data['message'])) {
 										$alertType = $data['status'] ? "success" : "danger";
-										echo '<div class="alert alert-' . $alertType . ' alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' . $data['message'] . '</div>';
+										echo '<div class="alert alert-' . $alertType . ' alert-dismissable">' . $data['message'] . '</div>';
 									}
 									?>
-									<div class="main-box text-left">
-										<h2 class="logo"><?php echo $_config['sitename']; ?></h2>
-										<p><?php echo $_config['description']; ?></p>
-										<hr>
-										<form method="POST" action="?action=register&page=register">
-											<input type="hidden" id="g-recaptcha-response" name="g-recaptcha-response" />
-											<p><b>账号</b></p>
-											<p><input type="text" class="form-control" name="username" id="username" require /></p>
-											<p><b>邮箱</b></p>
-											<p><input type="email" class="form-control" name="email" id="email" require /></p>
-											<?php
-											if($_config['smtp']['enable']) {
-											?>
-											<p><b>验证码</b> <small><a href="javascript:sendcode()">[点击发送]</a></small></p>
-											<p><input type="number" class="form-control" name="verifycode" id="verifycode" require /></p>
-											<?php
-											}
-											if($_config['register']['invite']) {
-											?>
-											<p><b>邀请码</b></p>
-											<p><input type="text" class="form-control" name="invitecode" id="invitecode" require /></p>
-											<?php
-											}
-											?>
-											<p><b>密码</b></p>
-											<p><input type="password" class="form-control" name="password" id="password" require /></p>
-											<p><button type="submit" class="btn btn-primary full-width">注册</button></p>
-											<?php
-											if($_config['register']['enable']) {
-												echo "<p class='text-center'>已经注册了？<a href='?page=login'>立即登录</a></p>";
-											}
-											?>
-										</form>
-									</div>
-								</center>
-							</td>
-						</tr>
-					</table>
-				</div>
-			</div>
-		</div>
-		<p class="copyright">&copy; <?php echo date("Y") . " {$_config['sitename']}"; ?></p>
-		<?php
-		if($_config['recaptcha']['enable']) {
-			echo <<<EOF
-		<script type="text/javascript">
-			window.onload = function() {
-				grecaptcha.ready(function() {
-					grecaptcha.execute('{$_config['recaptcha']['sitekey']}', {action:'validate_captcha'}).then(function(token) {
-						document.getElementById('g-recaptcha-response').value = token;
-					});
-				});
-			}
-		</script>
-EOF;
-		}
-		?>
-		<script type="text/javascript">
-			function sendcode() {
+                </div>
+                <div class="card-body">
+                  <form role="form" method="POST" action="/register?action=register">
+                    <div class="mb-3">
+                      <input type="email" class="form-control form-control-lg" placeholder="电子邮箱" aria-label="email"  name="email" id="email" require>
+                    </div>
+                    <div class="mb-3">
+                      <input type="password" class="form-control form-control-lg" placeholder="密码" aria-label="password" name="password" id="password" require>
+                    </div>
+                    <div class="mb-3">
+                    	<div class="row">
+                    	    <div class="col-6">  
+                                <input type="number" class="form-control" placeholder="验证码" aria-label="verifycode" name="verifycode" id="verifycode" require>
+                            </div>
+                      		<div id="getcode" class="col-6">  
+                      		    <button  onclick="sendcode() " type="button" class="btn btn-primary">获取验证码</button> 
+                            </div>
+                    </div>
+                    
+                    <div class="text-center">
+                      <button type="submit" class="btn btn-lg btn-primary btn-lg w-100 mt-4 mb-0">同意幻心网络协议并注册</button>
+                    </div>
+                </div>
+                  </form>
+                <div class="card-footer text-center pt-0 px-lg-2 px-1">
+                  <p class="mb-4 text-sm mx-auto">
+                    已有账户?
+                    <a href="/login" class="text-primary text-gradient font-weight-bold">登录</a>
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div class="col-6 d-lg-flex d-none h-100 my-auto pe-0 position-absolute top-0 end-0 text-center justify-content-center flex-column">
+              <div class="position-relative bg-gradient-primary h-100 m-3 px-7 border-radius-lg d-flex flex-column justify-content-center overflow-hidden" style="background-image: url('');
+          background-size: cover;">
+                <span class="mask bg-gradient-primary opacity-6"></span>
+                <h4 class="mt-5 text-white font-weight-bolder position-relative"><?php echo $response['hitokoto'];?></h4>
+                <p class="text-white position-relative"><?php echo $response['from'];?></p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      </div>
+    </section>
+  </main>
+  <!--   Core JS Files   -->
+  <script src="assets/js/core/popper.min.js"></script>
+  <script src="assets/js/core/bootstrap.min.js"></script>
+  <script src="assets/js/plugins/perfect-scrollbar.min.js"></script>
+  <script src="assets/js/plugins/smooth-scrollbar.min.js"></script>
+  <script src="https://lf3-cdn-tos.bytecdntp.com/cdn/expire-1-M/jquery/2.1.3/jquery.min.js"></script>
+  <script src="https://lf9-cdn-tos.bytecdntp.com/cdn/expire-1-M/sweetalert/2.1.2/sweetalert.min.js"></script>
+  <script>
+    var win = navigator.platform.indexOf('Win') > -1;
+    if (win && document.querySelector('#sidenav-scrollbar')) {
+      var options = {
+        damping: '0.5'
+      }
+      Scrollbar.init(document.querySelector('#sidenav-scrollbar'), options);
+    }
+    
+	function sendcode() {
+document.getElementById('getcode').innerHTML = '<button id="getcode" type="button" class="btn"><span class="spinner-border spinner-border-sm" disabled></span>获取验证码</button>';
 				var htmlobj = $.ajax({
 					type: 'POST',
 					url: "?action=sendmail",
@@ -101,14 +172,23 @@ EOF;
 					},
 					async:true,
 					error: function() {
+document.getElementById('getcode').innerHTML = '<button onclick="sendcode()" type="button" class="btn btn-primary">获取验证码</button>';
+
 						return;
 					},
 					success: function() {
-						alert(htmlobj.responseText);
+						swal({
+                            title: htmlobj.responseText,
+                            icon: "success",
+                            confirmButtonText: "确定"
+                        });
+                        document.getElementById('getcode').innerHTML = '<button onclick="sendcode()" type="button" class="btn btn-primary">获取验证码</button>';
 						return;
 					}
 				});
 			}
-		</script>
-	</body>
+  </script>
+  <script src="assets/js/wefrp-dashboard.min.js?v=2.0.4"></script>
+</body>
+
 </html>

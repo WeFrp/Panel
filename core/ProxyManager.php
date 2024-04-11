@@ -1,7 +1,7 @@
 <?php
-namespace SakuraPanel;
+namespace WeFrp;
 
-use SakuraPanel;
+use WeFrp;
 
 class ProxyManager {
 	
@@ -124,10 +124,10 @@ class ProxyManager {
 			"use_compression"     => $use_compression,
 			"domain"              => $domain,
 			"locations"           => $locations,
-			"host_header_rewrite" => $host_header_rewrite,
-			"header_X-From-Where" => $header_X_From_Where,
+			"host_header_rewrite" => null,
+			"header_X-From-Where" => null,
 			"remote_port"         => $remote_port,
-			"sk"                  => $sk,
+			"sk"                  => null,
 			"status"              => $status,
 			"lastupdate"          => $lastupdate,
 			"node"                => $node
@@ -140,8 +140,8 @@ class ProxyManager {
 	{
 		global $_config;
 		
-		$nm    = new SakuraPanel\NodeManager();
-		$um    = new SakuraPanel\UserManager();
+		$nm    = new WeFrp\NodeManager();
+		$um    = new WeFrp\UserManager();
 		$_list = Array("node", "proxy_name", "proxy_type", "local_ip", "local_port", "remote_port", "domain");
 		$_type = Array("tcp", "udp", "http", "https", "xtcp", "stcp");
 		$max_proxies = Intval($um->getInfoByUser($_SESSION['user'])['proxies']);
@@ -277,9 +277,9 @@ class ProxyManager {
 	public function getUserProxiesConfig($user, $node)
 	{
 		global $_config;
-		
-		$nm = new SakuraPanel\NodeManager();
-		$um = new SakuraPanel\UserManager();
+		global $_GET;
+		$nm = new WeFrp\NodeManager();
+		$um = new WeFrp\UserManager();
 		
 		if(!$um->checkUserExist($user)) {
 			return Array(false, "用户不存在");
@@ -292,11 +292,12 @@ class ProxyManager {
 		// 获取节点信息和用户 Token
 		$ns = $nm->getNodeInfo($node);
 		$tk = $um->getUserToken($user);
-		
+		$list = $this->getUserProxiesList($user);
+if($_GET['config_type'] == 'ini'){
 		// 客户端基础配置
 		$configuration = <<<EOF
 [common]
-server_addr = {$ns['ip']}
+server_addr = {$ns['hostname']}
 server_port = {$ns['port']}
 tcp_mux = true
 protocol = tcp
@@ -308,8 +309,6 @@ dns_server = 114.114.114.114
 EOF;
 		
 		// 获取用户的所有隧道
-		$list = $this->getUserProxiesList($user);
-		
 		foreach($list as $item) {
 			
 			// 如果不是此节点的忽略
@@ -347,6 +346,67 @@ EOF;
 			$configuration .= $item[7] == "" ? "" : "use_compression = {$item[7]}\n";
 			$configuration .= "\n";
 		}
+}else{
+$configuration = <<<EOF
+serverAddr = "{$ns['hostname']}"
+serverPort = {$ns['port']}
+user = "{$tk}"
+
+[transport]
+protocol = "tcp"
+
+[transport.tls]
+enable = false
+disableCustomTLSFirstByte = false
+
+[auth]
+method = "token"
+token = "{$ns['token']}"
+
+
+EOF;
+		foreach($list as $item) {
+			
+			// 如果不是此节点的忽略
+			if(Intval($item[16]) !== Intval($node) || $item[14] !== "0") continue;
+			
+			// 防止出现 Bug
+			$local_ip   = $item[4] == "" ? "127.0.0.1" : $item[4];
+			$local_port = $item[5] == "" ? "80" : $item[5];
+			
+			// 隧道的基本信息
+			$configuration .= <<<EOF
+[[proxies]]
+name = "{$item[2]}"
+type = "{$item[3]}"
+localIP = "{$local_ip}"
+localPort = {$local_port}
+
+EOF;
+
+			if($item[3] == "http" || $item[3] == "https") {
+				// HTTP / HTTPS
+				$domain = json_decode($item[8], true);
+				$configuration .= "customDomains = [".'"'."{$domain[0]}".'"'."]\n";
+				$configuration .= $item[9] == "" ? "" : "locations = [".'"'."{$item[9]}".'"'."]\n";
+				$configuration .= $item[10] == "" ? "" : "hostHeaderRewrite = ".'"'."{$item[10]}".'"'."\n";
+				$configuration .= $item[13] == "" ? "" : "requestHeaders.set.x-from-where = ".'"'."{$item[13]}".'"'."\n";
+			} else {
+				// TCP / UDP / XTCP / STCP
+				$configuration .= "remotePort = {$item[11]}\n";
+				$configuration .= $item[12] == "" ? "" : "secretKey = ".'"'."{$item[12]}".'"'."\n";
+			}
+			
+			// 压缩和加密
+			if($item[6] == "true" || $item[7] == "true") {
+			$configuration .= "\n[proxies.transport]\n";
+			$configuration .= $item[6] == "" ? "" : "useEncryption = {$item[6]}\n";
+			$configuration .= $item[7] == "" ? "" : "useCompression = {$item[7]}\n";
+			$configuration .= "\n";
+			}
+		}
+}
+
 		
 		return $configuration;
 	}

@@ -1,9 +1,9 @@
 <?php
 $db = [
 	/* 数据库地址 */ "host" => "localhost",
-	/* 数据库账号 */ "user" => "root",
-	/* 数据库密码 */ "pass" => "12345678",
-	/* 数据库名字 */ "name" => "spanel",
+	/* 数据库账号 */ "user" => "yisule",
+	/* 数据库密码 */ "pass" => "yisule",
+	/* 数据库名字 */ "name" => "yisule",
 	/* 数据库端口 */ "port" => 3306
 ];
 
