@@ -1,7 +1,7 @@
 <?php
-namespace SakuraPanel;
+namespace WeFrp;
 
-use SakuraPanel;
+use WeFrp;
 
 class NodeManager {
 	
@@ -9,7 +9,7 @@ class NodeManager {
 	{
 		$ninfo = $this->getNodeInfo($node);
 		if($ninfo) {
-			$result = SakuraPanel\Utils::http("http://admin:{$ninfo['admin_pass']}@{$ninfo['ip']}:{$ninfo['admin_port']}/api/client/close/{$token}");
+			$result = WeFrp\Utils::http("http://admin:{$ninfo['admin_pass']}@{$ninfo['ip']}:{$ninfo['admin_port']}/api/client/close/{$token}");
 			if(isset($result['body'])) {
 				$json   = json_decode($result['body'], true);
 				if(is_array($json)) {
@@ -61,7 +61,7 @@ class NodeManager {
 	
 	public function isUserHasPermission($user, $node)
 	{
-		$um = new SakuraPanel\UserManager();
+		$um = new WeFrp\UserManager();
 		$ns = $this->getNodeInfo($node);
 		$us = $um->getInfoByUser($user);
 		if(is_array($us) && is_array($ns)) {

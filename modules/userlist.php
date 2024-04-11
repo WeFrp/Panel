@@ -1,18 +1,18 @@
 <?php
-namespace SakuraPanel;
+namespace WeFrp;
 
-use SakuraPanel;
+use WeFrp;
 
 $page_title = "用户列表";
-$um = new SakuraPanel\UserManager();
+$um = new WeFrp\UserManager();
 $rs = Database::querySingleLine("users", Array("username" => $_SESSION['user']));
 
 if(!$rs || $rs['group'] !== "admin") {
-	exit("<script>location='?page=panel';</script>");
+	exit("<script>location='/panel';</script>");
 }
 
 if(isset($_GET['getinfo']) && preg_match("/^[0-9]{1,10}$/", $_GET['getinfo'])) {
-	SakuraPanel\Utils::checkCsrf();
+	WeFrp\Utils::checkCsrf();
 	$rs = Database::querySingleLine("users", Array("id" => $_GET['getinfo']));
 	if($rs) {
 		$lm = $um->getLimit($rs['username']);
@@ -144,14 +144,14 @@ if(isset($_GET['getinfo']) && preg_match("/^[0-9]{1,10}$/", $_GET['getinfo'])) {
 						$npage = $spage + 1;
 						if($i > 10) {
 							if(isset($_GET['p']) && Intval($_GET['p']) > 1) {
-								echo "<a href='?page=panel&module=userlist{$search}'><button class='btn btn-default'><i class='fa fa-home'></i></button></a>&nbsp;&nbsp;";
-								echo "<a href='?page=panel&module=userlist{$search}&p={$fpage}'><button class='btn btn-default'><i class='fa fa-angle-left'></i></button></a>&nbsp;&nbsp;";
+								echo "<a href='/panel/userlist{$search}'><button class='btn btn-default'><i class='fa fa-home'></i></button></a>&nbsp;&nbsp;";
+								echo "<a href='/panel/userlist{$search}&p={$fpage}'><button class='btn btn-default'><i class='fa fa-angle-left'></i></button></a>&nbsp;&nbsp;";
 							}
-							echo "<a href='?page=panel&module=userlist{$search}&p={$npage}'><button class='btn btn-default'><i class='fa fa-angle-right'></i></button></a>";
+							echo "<a href='/panel/userlist{$search}&p={$npage}'><button class='btn btn-default'><i class='fa fa-angle-right'></i></button></a>";
 						} else {
 							if(isset($_GET['p']) && Intval($_GET['p']) > 1) {
-								echo "<a href='?page=panel&module=userlist{$search}'><button class='btn btn-default'><i class='fa fa-home'></i></button></a>&nbsp;&nbsp;";
-								echo "<a href='?page=panel&module=userlist{$search}&p={$fpage}'><button class='btn btn-default'><i class='fa fa-angle-left'></i></button></a>";
+								echo "<a href='/panel/userlist{$search}'><button class='btn btn-default'><i class='fa fa-home'></i></button></a>&nbsp;&nbsp;";
+								echo "<a href='/panel/userlist{$search}&p={$fpage}'><button class='btn btn-default'><i class='fa fa-angle-left'></i></button></a>";
 							}
 						}
 						?></div>
@@ -225,7 +225,7 @@ function search() {
 function edit(id) {
 	var htmlobj = $.ajax({
 		type: 'GET',
-		url: "?page=panel&module=userlist&getinfo=" + id + "&csrf=" + csrf_token,
+		url: "/panel/userlist?getinfo=" + id + "&csrf=" + csrf_token,
 		async:true,
 		error: function() {
 			alert("错误：" + htmlobj.responseText);
@@ -256,7 +256,7 @@ function save() {
 	}
 	var htmlobj = $.ajax({
 		type: 'POST',
-		url: "?action=updateuser&page=panel&module=userlist&csrf=" + csrf_token,
+		url: "/panel/userlist?action=updateuser&csrf=" + csrf_token,
 		async:true,
 		data: {
 			id: userid,

@@ -1,7 +1,7 @@
 <?php
-namespace SakuraPanel;
+namespace WeFrp;
 
-use SakuraPanel;
+use WeFrp;
 
 include(ROOT . "/core/Parsedown.php");
 
@@ -13,12 +13,12 @@ $markdown->setBreaksEnabled(true);
 $markdown->setUrlsLinked(true);
 $page_title = "每日签到";
 $rs = Database::querySingleLine("users", Array("username" => $_SESSION['user']));
-$pm = new SakuraPanel\ProxyManager();
-$nm = new SakuraPanel\NodeManager();
-$um = new SakuraPanel\UserManager();
+$pm = new WeFrp\ProxyManager();
+$nm = new WeFrp\NodeManager();
+$um = new WeFrp\UserManager();
 
 if(!$rs) {
-	exit("<script>location='?page=login';</script>");
+	exit("<script>location='/login';</script>");
 }
 
 $user_traffic = $rs['traffic'] - ($um->getTodayTraffic($_SESSION['user']) / 1024 / 1024);
@@ -27,7 +27,7 @@ if(isset($_GET['sign'])) {
 	
 	ob_clean();
 	
-	SakuraPanel\Utils::checkCsrf();
+	WeFrp\Utils::checkCsrf();
 	
 	// 欢迎来到喜闻乐见的欧皇与非酋抽流量
 	
@@ -112,7 +112,7 @@ if($ss) {
     <div class="container-fluid">
         <div class="row mb-2">
             <div class="col-sm-6">
-                <h1 class="m-0 text-dark"><?php echo $page_title; ?>&nbsp;&nbsp;<small class="text-muted text-xs">签到以获取免费的流量</small></h1></div>
+                <h1 class="m-0 text-dark"><?php echo $page_title; ?></h1></div>
             <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
                     <li class="breadcrumb-item">
@@ -127,7 +127,7 @@ if($ss) {
         <div class="row">
             <div class="col-lg-7">
                 <div class="card">
-                    <div class="card-header border-0">
+                    <div class="card-header pb-0">
                         <div class="d-flex justify-content-between">
                             <h3 class="card-title">每日签到</h3>
                         </div>
@@ -198,12 +198,9 @@ if($ss) {
         <div class="modal-content">
             <div class="modal-header">
                 <h4 class="modal-title" id="msg-title"></h4>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">×</span></button>
             </div>
             <div class="modal-body" id="msg-body"></div>
             <div class="modal-footer justify-content-between">
-                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
                 <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="window.location.reload()">确定</button></div>
         </div>
     </div>
@@ -218,7 +215,7 @@ function alertMessage(title, body) {
 function sign() {
 	var htmlobj = $.ajax({
 		type: 'GET',
-		url: "?page=panel&module=sign&sign&csrf=" + csrf_token,
+		url: "/panel/sign&sign&csrf=" + csrf_token,
 		async:true,
 		error: function() {
 			return;

@@ -1,12 +1,12 @@
 <?php
-namespace SakuraPanel;
+namespace WeFrp;
 
-use SakuraPanel;
+use WeFrp;
 
 global $_config;
 
 if(isset($_GET['link']) && $_GET['link'] !== "") {
-	$um = new SakuraPanel\UserManager();
+	$um = new WeFrp\UserManager();
 	if($um->resetPass($_GET['link'])) {
 		exit("<script>alert('密码重置成功，请使用新密码登录。');location='?page=login';</script>");
 	} else {
@@ -68,20 +68,5 @@ if(isset($_GET['link']) && $_GET['link'] !== "") {
 			</div>
 		</div>
 		<p class="copyright">&copy; <?php echo date("Y") . " {$_config['sitename']}"; ?></p>
-		<?php
-		if($_config['recaptcha']['enable']) {
-			echo <<<EOF
-		<script type="text/javascript">
-			window.onload = function() {
-				grecaptcha.ready(function() {
-					grecaptcha.execute('{$_config['recaptcha']['sitekey']}', {action:'validate_captcha'}).then(function(token) {
-						document.getElementById('g-recaptcha-response').value = token;
-					});
-				});
-			}
-		</script>
-EOF;
-		}
-		?>
 	</body>
 </html>

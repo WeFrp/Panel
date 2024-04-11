@@ -1,5 +1,5 @@
 <?php
-namespace SakuraPanel;
+namespace WeFrp;
 
 class Database {
 	

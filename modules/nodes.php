@@ -1,18 +1,18 @@
 <?php
-namespace SakuraPanel;
+namespace WeFrp;
 
-use SakuraPanel;
+use WeFrp;
 
 $page_title = "服务器节点";
-$um = new SakuraPanel\NodeManager();
+$um = new WeFrp\NodeManager();
 $rs = Database::querySingleLine("users", Array("username" => $_SESSION['user']));
 
 if(!$rs || $rs['group'] !== "admin") {
-	exit("<script>location='?page=panel';</script>");
+	exit("<script>location='/panel';</script>");
 }
 
 if(isset($_GET['getinfo']) && preg_match("/^[0-9]{1,10}$/", $_GET['getinfo'])) {
-	SakuraPanel\Utils::checkCsrf();
+	WeFrp\Utils::checkCsrf();
 	$rs = Database::querySingleLine("nodes", Array("id" => $_GET['getinfo']));
 	if($rs) {
 		ob_clean();
@@ -172,7 +172,7 @@ function search() {
 function edit(id) {
 	var htmlobj = $.ajax({
 		type: 'GET',
-		url: "?page=panel&module=nodes&getinfo=" + id + "&csrf=" + csrf_token,
+		url: "/panel/nodes&getinfo=" + id + "&csrf=" + csrf_token,
 		async:true,
 		error: function() {
 			alert("错误：" + htmlobj.responseText);
@@ -206,7 +206,7 @@ function deletenode(id) {
 	}
 	var htmlobj = $.ajax({
 		type: 'POST',
-		url: "?action=deletenode&page=panel&module=nodes&csrf=" + csrf_token,
+		url: "/panel/nodes?action=deletenode&csrf=" + csrf_token,
 		async:true,
 		data: {
 			id: id
@@ -223,10 +223,10 @@ function deletenode(id) {
 	});
 }
 function save() {
-	var url = "?action=updatenode&page=panel&module=nodes";
+	var url = "/panel?action=updatenode";
 	if(nodeid == undefined) {
 		nodeid = null;
-		url = "?action=addnode&page=panel&module=nodes";
+		url = "/panel/nodes?action=addnode";
 	}
 	var htmlobj = $.ajax({
 		type: 'POST',

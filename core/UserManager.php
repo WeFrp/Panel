@@ -1,7 +1,7 @@
 <?php
-namespace SakuraPanel;
+namespace WeFrp;
 
-use SakuraPanel;
+use WeFrp;
 
 class UserManager {
 	
@@ -12,28 +12,25 @@ class UserManager {
 	
 	public function doLogin($data)
 	{
-		if(empty($data['username']) || empty($data['password'])) {
+		if(empty($data['email']) || empty($data['password'])) {
 			return Array("status" => false, "message" => "请将信息填写完整");
 		}
 		
-		if(!$this->checkUserName($data['username'])) {
-			return Array("status" => false, "message" => "用户名不合法");
-		}
 		
-		// 获取用户的信息（以用户名）
-		$rs = $this->getInfoByUser($data['username']);
+		// 获取用户的信息（以邮箱）
+		$rs = $this->getInfoByUser($data['email']);
 		
 		if(!$rs) {
 			
 			// 获取用户的信息（以邮箱）
-			$rs = $this->getInfoByEmail($data['username']);
+			$rs = $this->getInfoByEmail($data['email']);
 			if(!$rs) {
-				return Array("status" => false, "message" => "用户名或密码错误");
+				return Array("status" => false, "message" => "邮箱或密码错误");
 			}
 		}
 		
 		if(!$this->checkPassword($data['password'], $rs['password'])) {
-			return Array("status" => false, "message" => "用户名或密码错误");
+			return Array("status" => false, "message" => "邮箱或密码错误");
 		}
 		
 		return Array("status" => true, "message" => "登录成功", "username" => $rs['username'], "email" => $rs['email']);
@@ -42,7 +39,6 @@ class UserManager {
 	public function doRegister($data)
 	{
 		global $_config;
-		
 		if(!$_config['register']['enable']) {
 			return Array("status" => false, "message" => "抱歉，本站暂不开放注册");
 		}
@@ -57,8 +53,8 @@ class UserManager {
 			$inviteCode = false;
 		}
 		
-		if(!isset($data['username']) || !isset($data['email']) || !isset($data['password']) ||
-			empty($data['username']) || empty($data['email']) || empty($data['password'])) {
+		if(!isset($data['email']) || !isset($data['email']) || !isset($data['password']) ||
+			empty($data['email']) || empty($data['email']) || empty($data['password'])) {
 			return Array("status" => false, "message" => "请将信息填写完整");
 		}
 		
@@ -83,12 +79,9 @@ class UserManager {
 			}
 		}
 		
-		if(!$this->checkUserName($data['username'])) {
-			return Array("status" => false, "message" => "用户名不合法");
-		}
 		
-		if($this->checkUserExist($data['username'])) {
-			return Array("status" => false, "message" => "该用户名已被注册");
+		if($this->checkUserExist($data['email'])) {
+			return Array("status" => false, "message" => "该邮箱已被注册");
 		}
 		
 		if($this->checkEmailExist($data['email'])) {
@@ -99,12 +92,12 @@ class UserManager {
 			if(!$this->checkInviteCode($data['invitecode'])) {
 				return Array("status" => false, "message" => "邀请码无效或已被使用");
 			} else {
-				Database::update("invitecode", Array("user" => $data['username']), Array("code" => $data['invitecode']));
+				Database::update("invitecode", Array("user" => $data['email']), Array("code" => $data['invitecode']));
 			}
 		}
 		
 		// 执行注册
-		$this->addUser($data['username'], $data['email'], $data['password']);
+		$this->addUser($data['email'], $data['email'], $data['password']);
 		
 		return Array("status" => true, "message" => "账号注册成功！");
 	}
@@ -137,9 +130,9 @@ class UserManager {
 		}
 		
 		if(isset($_SESSION['sendmail']) && time() - $_SESSION['sendmail'] <= 60) return Array("status" => false, "message" => "您操作的频率太高，请稍后再试");
-		if($data['username'] == "") return Array("status" => false, "message" => "请填写要找回密码的账号或邮箱");
+		if($data['email'] == "") return Array("status" => false, "message" => "请填写要找回密码的账号或邮箱");
 		
-		$rs     = $this->getInfoByUser($data['username']);
+		$rs     = $this->getInfoByUser($data['email']);
 		$link   = sha1(md5($rs['username'] . $rs['password'] . time() . mt_rand(0, 9999999)) . md5(mt_rand(0, 9999999)));
 		$found = false;
 		
@@ -147,7 +140,7 @@ class UserManager {
 			$this->sendFindpassEmail($rs['username'], $rs['email'], $link);
 			$found = true;
 		} else {
-			$rs = $this->getInfoByEmail($data['username']);
+			$rs = $this->getInfoByEmail($data['email']);
 			if($rs) {
 				$this->sendFindpassEmail($rs['username'], $rs['email'], $link);
 				$found = true;
@@ -175,7 +168,7 @@ class UserManager {
 	{
 		global $_config;
 		
-		$type  = SakuraPanel\Utils::isHttps() ? "https" : "http";
+		$type  = WeFrp\Utils::isHttps() ? "https" : "http";
 		$token = $this->getUserToken($username);
 		$url   = "{$type}://{$_SERVER['SERVER_NAME']}/?page=findpass&link={$link}";
 		$temp  = @file_get_contents(ROOT . "/assets/email/findpass.html");
@@ -186,7 +179,7 @@ class UserManager {
 		$temp  = str_replace("{TOKEN}", $token, $temp);
 		$temp  = str_replace("{URL}", $url, $temp);
 		
-		$smtp  = new SakuraPanel\Smtp(
+		$smtp  = new WeFrp\Smtp(
 			$_config['smtp']['host'],
 			$_config['smtp']['port'],
 			true,
@@ -207,8 +200,9 @@ class UserManager {
 		$temp  = str_replace("{SITENAME}", $_config['sitename'], $temp);
 		$temp  = str_replace("{SITEDESCRIPTION}", $_config['description'], $temp);
 		$temp  = str_replace("{NUMBER}", $number, $temp);
+		$temp  = str_replace("{SITEURL}", $_config['siteurl'], $temp);
 		
-		$smtp  = new SakuraPanel\Smtp(
+		$smtp  = new WeFrp\Smtp(
 			$_config['smtp']['host'],
 			$_config['smtp']['port'],
 			true,
@@ -263,7 +257,7 @@ class UserManager {
 				return $result;
 			}
 			
-			if(isset($data['inbound'], $data['outbound']) && SakuraPanel\Regex::isNumber($data['inbound']) && SakuraPanel\Regex::isNumber($data['outbound'])) {
+			if(isset($data['inbound'], $data['outbound']) && WeFrp\Regex::isNumber($data['inbound']) && WeFrp\Regex::isNumber($data['outbound'])) {
 				$ls = Database::querySingleLine("limits", Array("username" => $rs['username']));
 				if($ls) {
 					$result = Database::update("limits", Array(

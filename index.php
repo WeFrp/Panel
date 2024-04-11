@@ -1,13 +1,14 @@
 <?php
-namespace SakuraPanel;
 
-use SakuraPanel;
+namespace WeFrp;
+
+use WeFrp;
 
 OB_START();
 SESSION_START();
 
 define("ROOT", __DIR__);
-
+include(ROOT . "/core/htaccess.php");
 include(ROOT . "/configuration.php");
 include(ROOT . "/core/Database.php");
 include(ROOT . "/core/Regex.php");
@@ -16,7 +17,7 @@ include(ROOT . "/core/Settings.php");
 include(ROOT . "/core/Smtp.php");
 
 $conn = null;
-$db = new SakuraPanel\Database();
+$db = new WeFrp\Database();
 
 include(ROOT . "/core/Pages.php");
 include(ROOT . "/core/UserManager.php");

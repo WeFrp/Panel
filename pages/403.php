@@ -19,6 +19,6 @@
 		<logo>:(</logo>
 		<h1>403 Forbidden</h1>
 		<p><b>Error:</b> Permission denied</p>
-		<p><em>Powered by Sakura Panel</em></p>
+		<p><em>Powered by WeFrp</em></p>
 	</body>
 </html>

@@ -1,20 +1,20 @@
 <?php
-namespace SakuraPanel;
+namespace WeFrp;
 
-use SakuraPanel;
+use WeFrp;
 
 $page_title = "站点设置";
-$um = new SakuraPanel\UserManager();
-$nm = new SakuraPanel\NodeManager();
-$pm = new SakuraPanel\ProxyManager();
+$um = new WeFrp\UserManager();
+$nm = new WeFrp\NodeManager();
+$pm = new WeFrp\ProxyManager();
 $rs = Database::querySingleLine("users", Array("username" => $_SESSION['user']));
 
 if(!$rs || $rs['group'] !== "admin") {
-	exit("<script>location='?page=panel';</script>");
+	exit("<script>location='/panel';</script>");
 }
 
-$broadcast = SakuraPanel\Settings::get("broadcast");
-$helpinfo  = SakuraPanel\Settings::get("helpinfo");
+$broadcast = WeFrp\Settings::get("broadcast");
+$helpinfo  = WeFrp\Settings::get("helpinfo");
 ?>
 <style type="text/css">
 .fix-text p {
@@ -91,7 +91,7 @@ $helpinfo  = SakuraPanel\Settings::get("helpinfo");
 						<table class="table table-striped table-valign-middle infotable" style="width: 100%;font-size: 15px;margin-top: 0px;margin-bottom: 0px;">
 							<tr>
 								<th>版本</th>
-								<td><?php echo SakuraPanel\Utils::PANEL_VERSION; ?></td>
+								<td><?php echo WeFrp\Utils::PANEL_VERSION; ?></td>
 							</tr>
 							<tr>
 								<th>服务器程序</th>
@@ -122,7 +122,7 @@ $helpinfo  = SakuraPanel\Settings::get("helpinfo");
 								<td id="updateinfo">正在检查更新...</td>
 							</tr>
 						</table>
-						<p style="padding: 12px;">&copy; 2019-<?php echo date("Y"); ?> SakuraPanel</p>
+						<p style="padding: 12px;">&copy; 2019-<?php echo date("Y"); ?> WeFrp</p>
                     </div>
                 </div>
             </div>
@@ -154,7 +154,7 @@ function alertMessage(title, body) {
 function saveBroadcast() {
 	var htmlobj = $.ajax({
 		type: 'POST',
-		url: "?action=updatebroadcast&page=panel&module=settings&csrf=" + csrf_token,
+		url: "/panel/settings?action=updatebroadcast&csrf=" + csrf_token,
 		async:true,
 		data: {
 			data: $("#broadcast").val()
@@ -172,7 +172,7 @@ function saveBroadcast() {
 function saveHelpInfo() {
 	var htmlobj = $.ajax({
 		type: 'POST',
-		url: "?action=updatehelpinfo&page=panel&module=settings&csrf=" + csrf_token,
+		url: "/panel/settings?action=updatehelpinfo&csrf=" + csrf_token,
 		async:true,
 		data: {
 			data: $("#helpinfo").val()
@@ -190,7 +190,7 @@ function saveHelpInfo() {
 function preview(data) {
 	var htmlobj = $.ajax({
 		type: 'POST',
-		url: "?action=preview&page=panel&module=settings&csrf=" + csrf_token,
+		url: "/panel/settings?action=preview&csrf=" + csrf_token,
 		async:true,
 		data: {
 			data: data
@@ -209,7 +209,7 @@ function checkUpdate() {
 	$("#updateinfo").html("正在检查更新...");
 	var htmlobj = $.ajax({
 		type: 'GET',
-		url: "https://cdn.zerodream.net/panel/update.php?s=SakuraPanel&version=<?php echo urlencode(SakuraPanel\Utils::PANEL_VERSION); ?>",
+		url: "https://cdn.zerodream.net/panel/update.php?s=WeFrp&version=<?php echo urlencode(WeFrp\Utils::PANEL_VERSION); ?>",
 		async:true,
 		error: function() {
 			$("#updateinfo").html("检查更新出错：" + htmlobj.responseText);

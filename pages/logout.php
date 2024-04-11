@@ -1,12 +1,12 @@
 <?php
-namespace SakuraPanel;
+namespace WeFrp;
 
-use SakuraPanel;
+use WeFrp;
 
-SakuraPanel\Utils::checkCsrf();
+WeFrp\Utils::checkCsrf();
 
 unset($_SESSION['user']);
 unset($_SESSION['mail']);
 unset($_SESSION['token']);
 ?>
-<script>location='?page=login';</script>
+<script>location='/login';</script>

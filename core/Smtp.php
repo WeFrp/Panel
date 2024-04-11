@@ -1,5 +1,5 @@
 <?php
-namespace SakuraPanel;
+namespace WeFrp;
 
 class Smtp {
 	
@@ -50,7 +50,7 @@ class Smtp {
         $header .= "Subject: {$subject}\r\n";
         $header .= $additional_headers;
         $header .= "Date: " . date("r") . "\r\n";
-        $header .= "X-Mailer: By (SakuraPanel)\r\n";
+        $header .= "X-Mailer: By (XJHya)\r\n";
         
 		list($msec, $sec) = explode(" ", microtime());
         $header .= "Message-ID: <" . date("YmdHis", $sec) . "." . ($msec * 1000000) . ".{$mail_from}>\r\n";

@@ -1,7 +1,7 @@
 <?php
-namespace SakuraPanel;
+namespace WeFrp;
 
-use SakuraPanel;
+use WeFrp;
 
 global $_config;
 
@@ -9,18 +9,18 @@ $page_title = "创建隧道";
 $rs = Database::querySingleLine("users", Array("username" => $_SESSION['user']));
 
 if(!$rs) {
-	exit("<script>location='?page=login';</script>");
+	exit("<script>location='/login';</script>");
 }
 
-$nm = new SakuraPanel\NodeManager();
-$pm = new SakuraPanel\ProxyManager();
+$nm = new WeFrp\NodeManager();
+$pm = new WeFrp\ProxyManager();
 $un = $nm->getUserNode($rs['group']);
 
 $proxies_max = $rs['proxies'] == "-1" ? "无限制" : $rs['proxies'];
 
 if(isset($_GET['portrules'])) {
 	ob_clean();
-	SakuraPanel\Utils::checkCsrf();
+	WeFrp\Utils::checkCsrf();
 	echo "<p>映射的端口最小为 <code>{$_config['proxies']['min']}</code>，最大为 <code>{$_config['proxies']['max']}</code>。</p>";
 	if(!empty($_config['proxies']['protect'])) {
 		echo "<p>以下为系统保留的端口范围，不可使用：</p>";
@@ -35,7 +35,7 @@ if(isset($_GET['portrules'])) {
 }
 if(isset($_GET['randomport'])) {
 	ob_clean();
-	SakuraPanel\Utils::checkCsrf();
+	WeFrp\Utils::checkCsrf();
 	echo $pm->getRandomPort();
 	exit;
 }
@@ -70,7 +70,7 @@ if(isset($_GET['randomport'])) {
     <div class="container-fluid">
         <div class="row mb-2">
             <div class="col-sm-6">
-                <h1 class="m-0 text-dark"><?php echo $page_title; ?>&nbsp;&nbsp;<small class="text-muted text-xs">创建一个新的内网穿透隧道</small></h1></div>
+                <h1 class="m-0 text-dark"><?php echo $page_title; ?></h1></div>
             <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
                     <li class="breadcrumb-item">
@@ -85,7 +85,7 @@ if(isset($_GET['randomport'])) {
         <div class="row">
             <div class="col-lg-8">
                 <div class="card">
-                    <div class="card-header border-0">
+                    <div class="card-header pb-0">
                         <div class="d-flex justify-content-between">
                             <h3 class="card-title">创建映射隧道</h3>
                         </div>
@@ -116,8 +116,6 @@ if(isset($_GET['randomport'])) {
 									<option value="udp">UDP 隧道</option>
 									<option value="http">HTTP 隧道</option>
 									<option value="https">HTTPS 隧道</option>
-									<option value="stcp">STCP 隧道</option>
-									<option value="xtcp">XTCP 隧道</option>
 								</select></p>
 							</div>
 							<div class="col-sm-6">
@@ -156,25 +154,10 @@ if(isset($_GET['randomport'])) {
 									<option value="false">关闭</option>
 								</select></p>
 							</div>
-							<div class="col-sm-6">
-								<p><b>URL 路由</b> <small class="pdesc">指定要转发的 URL 路由，仅限 HTTP 隧道</small></p>
-								<p><input type="text" class="form-control" id="locations" placeholder="/" /></p>
-							</div>
-							<div class="col-sm-6">
-								<p><b>Host 重写</b> <small class="pdesc">重写请求头部的 Host 字段，仅限 HTTP 隧道</small></p>
-								<p><input type="text" class="form-control" id="host_header_rewrite" placeholder="frp.example.com" /></p>
-							</div>
-							<div class="col-sm-6">
-								<p><b>请求来源</b> <small class="pdesc">给后端区分请求来源用，仅限 HTTP 隧道</small></p>
-								<p><input type="text" class="form-control" id="header_X-From-Where" placeholder="frp_node_1" /></p>
-							</div>
-							<div class="col-sm-6">
-								<p><b>访问密码</b> <small class="pdesc">Frpc 以访客模式连接时的密码，仅限 XTCP/STCP</small></p>
-								<p><input type="text" class="form-control" id="sk" placeholder="1234567890" /></p>
-							</div>
 						</div>
                     </div>
 					<div class="card-footer">
+						<button type="button" class="btn btn-default" onclick="randomName()">随机隧道名</button>
 						<button type="button" class="btn btn-default" onclick="randomPort()">随机端口</button>
 						<button type="button" class="btn btn-primary float-right" onclick="addProxy()">完成创建</button>
 					</div>
@@ -182,13 +165,13 @@ if(isset($_GET['randomport'])) {
 			</div>
 			<div class="col-lg-4">
 				<div class="card">
-                    <div class="card-header border-0">
+                    <div class="card-header pb-0">
                         <div class="d-flex justify-content-between">
                             <h3 class="card-title">隧道类型介绍</h3>
                         </div>
                     </div>
                     <div class="card-body fix-text">
-						<p><b>提示：</b>XTCP 映射成功率并不高，具体取决于 NAT 设备的复杂度。</p>
+						<p><b>提示：</b>部分节点可能不支持部分隧道类型。</p>
 						<p><b>TCP 映射</b></p>
 						<p>基础的 TCP 映射，适用于大多数服务，例如远程桌面、SSH、Minecraft、泰拉瑞亚等</p>
 						<p><b>UDP 映射</b></p>
@@ -197,10 +180,6 @@ if(isset($_GET['randomport'])) {
 						<p>搭建网站专用映射，并通过 80 端口访问。</p>
 						<p><b>HTTPS 映射</b></p>
 						<p>带有 SSL 加密的网站映射，通过 443 端口访问，服务器需要支持 SSL。</p>
-						<p><b>XTCP 映射</b></p>
-						<p>客户端之间点对点 (P2P) 连接协议，流量不经过服务器，适合大流量传输的场景，需要两台设备之间都运行一个客户端。</p>
-						<p><b>STCP 映射</b></p>
-						<p>安全交换 TCP 连接协议，基于 TCP，访问此服务的用户也需要运行一个客户端，才能建立连接，流量由服务器转发。</p>
                     </div>
                 </div>
             </div>
@@ -212,14 +191,11 @@ if(isset($_GET['randomport'])) {
         <div class="modal-content">
             <div class="modal-header">
                 <h4 class="modal-title" id="msg-title"></h4>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">×</span></button>
             </div>
             <div class="modal-body" id="msg-body"></div>
             <div class="modal-footer justify-content-between">
-                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
-                <button type="button" class="btn btn-primary" data-dismiss="modal">确定</button></div>
-        </div>
+<button type="button" class="btn btn-primary" data-dismiss="modal" onclick="window.location.reload()">确定</button>
+</div>
     </div>
 </div>
 <script type="text/javascript">
@@ -245,7 +221,7 @@ function addProxy() {
 	var sk                  = $("#sk").val();
 	var htmlobj = $.ajax({
 		type: 'POST',
-		url: "?page=panel&module=addproxy&action=addproxy&csrf=" + csrf_token,
+		url: "/panel/addproxy&action=addproxy&csrf=" + csrf_token,
 		data: {
 			node               : node,
 			proxy_name         : proxy_name,
@@ -274,7 +250,7 @@ function addProxy() {
 function loadPortRules() {
 	var htmlobj = $.ajax({
 		type: 'GET',
-		url: "?page=panel&module=addproxy&portrules&csrf=" + csrf_token,
+		url: "/panel/addproxy?portrules&csrf=" + csrf_token,
 		async:true,
 		error: function() {
 			return;
@@ -288,7 +264,7 @@ function loadPortRules() {
 function randomPort() {
 	var htmlobj = $.ajax({
 		type: 'GET',
-		url: "?page=panel&module=addproxy&randomport&csrf=" + csrf_token,
+		url: "/panel/addproxy?randomport&csrf=" + csrf_token,
 		async:true,
 		error: function() {
 			alertMessage("发生错误", htmlobj.responseText);
@@ -299,5 +275,15 @@ function randomPort() {
 			return;
 		}
 	});
+}
+
+function randomName() {
+	  var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_';  
+        var randomString = '';  
+        for (let i = 0; i < 15; i++) {  
+        var randomIndex = Math.floor(Math.random() * chars.length);  
+        randomString += chars[randomIndex];  
+        }  
+		$("#proxy_name").val(randomString);
 }
 </script>
