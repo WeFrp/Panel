@@ -96,8 +96,7 @@ CREATE TABLE `settings`  (
   `value` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL
 ) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci ROW_FORMAT = Dynamic;
 
-INSERT INTO `settings` VALUES ('broadcast', '欢迎使用 Sakura Panel 内网穿透管理面板 by Akkariin');
-INSERT INTO `settings` VALUES ('helpinfo', '这里随便写一点什么帮助内容吧');
+INSERT INTO `settings` VALUES ('broadcast', '欢迎使用 WeFrp 内网穿透管理面板 by XJHya');
 
 -- ------------------
 -- 每日签到
