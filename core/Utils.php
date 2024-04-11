@@ -3,7 +3,7 @@ namespace WeFrp;
 
 class Utils {
 	
-	const PANEL_VERSION = "1.0.2";
+	const PANEL_VERSION = "1.0";
 	
 	public static function reCAPTCHA($response)
 	{
