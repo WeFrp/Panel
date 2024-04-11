@@ -14,7 +14,6 @@ if(!$rs || $rs['group'] !== "admin") {
 }
 
 $broadcast = WeFrp\Settings::get("broadcast");
-$helpinfo  = WeFrp\Settings::get("helpinfo");
 ?>
 <style type="text/css">
 .fix-text p {
@@ -64,22 +63,6 @@ $helpinfo  = WeFrp\Settings::get("helpinfo");
 						<button type="button" class="btn btn-primary float-right" onclick="saveBroadcast()">保存修改</button>
 					</div>
                 </div>
-				<div class="card">
-                    <div class="card-header border-0">
-                        <div class="d-flex justify-content-between">
-                            <h3 class="card-title">编辑帮助</h3>
-                        </div>
-                    </div>
-                    <div class="card-body">
-						<p style="margin-top: -16px;">在此处填写帮助内容，让用户更好的了解如何使用，支持 Markdown 语法。</p>
-						<textarea class="form-control" id="helpinfo"><?php echo $helpinfo; ?></textarea>
-                    </div>
-					<div class="card-footer">
-						<button type="button" class="btn btn-default" onclick="preview(helpinfo.value)">预览更改</button>
-						<button type="button" class="btn btn-primary float-right" onclick="saveHelpInfo()">保存修改</button>
-					</div>
-                </div>
-			</div>
 			<div class="col-lg-4">
 				<div class="card">
                     <div class="card-header border-0">
@@ -100,10 +83,6 @@ $helpinfo  = WeFrp\Settings::get("helpinfo");
 							<tr>
 								<th>运行模式</th>
 								<td><?php echo php_sapi_name(); ?></td>
-							</tr>
-							<tr>
-								<th>授权类型</th>
-								<td>免费版 (仅限非商业使用)</td>
 							</tr>
 							<tr>
 								<th>注册用户数</th>
@@ -205,26 +184,4 @@ function preview(data) {
 		}
 	});
 }
-function checkUpdate() {
-	$("#updateinfo").html("正在检查更新...");
-	var htmlobj = $.ajax({
-		type: 'GET',
-		url: "https://cdn.zerodream.net/panel/update.php?s=WeFrp&version=<?php echo urlencode(WeFrp\Utils::PANEL_VERSION); ?>",
-		async:true,
-		error: function() {
-			$("#updateinfo").html("检查更新出错：" + htmlobj.responseText);
-			return;
-		},
-		success: function() {
-			try {
-				var json = JSON.parse(htmlobj.responseText);
-				$("#updateinfo").html("最新版本：" + json.version + "<br>更新内容：" + json.message);
-			} catch(e) {
-				
-			}
-			return;
-		}
-	});
-}
-window.onload = checkUpdate;
 </script>
