@@ -43,6 +43,16 @@ chown -R www:www /data/wwwroot/my.panel.com/
 
 导入完成后，打开网站，注册一个新账号，然后在数据库中设置这个账号的 __group__ 字段为 `admin` 即可设置为管理员。
 
+### 伪静态设置
+nginx用户：
+```   
+location / {
+	if (!-e $request_filename){
+		rewrite  ^(.*)$  /index.php?p=$1  last;   break;
+	}
+}
+```
+
 ## 配套 Frps 服务端
 本面板需要专用 Frps 才能兼容，请访问我的另一个项目：https://github.com/WeFrp/Daemon (这个还没传先用原版) https://github.com/ZeroDream-CN/SakuraFrp
 
